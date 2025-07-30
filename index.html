@@ -273,7 +273,7 @@
                     <input type="text" placeholder="Japan Relocation Fund" class="expense-name flex-grow" onchange="saveBudget()">
                     <input type="number" placeholder="Amount (₹)" class="expense-amount w-32" onchange="saveBudget()">
                     <button type="button" class="delete-btn text-sm" onclick="removeGeneralExpenseRow(this); saveBudget()">X</button>
-                </div>
+                </div >
             </div>
             <button type="button" onclick="addGeneralExpenseRow('savingsContainer'); saveBudget()" class="mt-6 px-4 py-2 text-sm">
                 Add Savings Goal
@@ -346,8 +346,15 @@
         async function initializeFirebase() {
             try {
                 const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
-                // Use the Firebase configuration provided by the Canvas environment
-                const firebaseConfig = JSON.parse(typeof __firebase_config !== 'undefined' ? __firebase_config : '{}');
+                // Use the Firebase configuration provided by the user
+                const firebaseConfig = {
+                    apiKey: "AIzaSyC9qroARsKqpWJTUN2RMSxgSms220GMgXY",
+                    authDomain: "budgettracker-248d3.firebaseapp.com",
+                    projectId: "budgettracker-248d3",
+                    storageBucket: "budgettracker-248d3.firebasestorage.app",
+                    messagingSenderId: "1027935352980",
+                    appId: "1:1027935352980:web:f98cbbc69b515413375c81"
+                };
 
                 const app = initializeApp(firebaseConfig);
                 db = getFirestore(app);
@@ -365,15 +372,13 @@
                         // Load budget data after authentication is ready
                         loadBudget();
                     } else {
-                        // Sign in anonymously if no user is logged in
+                        // For user-deployed apps with their own config, always sign in anonymously
+                        // The __initial_auth_token is for the Canvas environment's Firebase project,
+                        // and will cause a mismatch with the user's project.
                         try {
-                            if (typeof __initial_auth_token !== 'undefined') {
-                                await signInWithCustomToken(auth, __initial_auth_token);
-                            } else {
-                                await signInAnonymously(auth);
-                            }
+                            await signInAnonymously(auth);
                         } catch (error) {
-                            console.error("Error during anonymous sign-in or custom token sign-in:", error);
+                            console.error("Error during anonymous sign-in:", error);
                             showMessage("Authentication failed. Data may not save.", 5000);
                         }
                     }
@@ -867,3 +872,4 @@
     </script>
 </body>
 </html>
+

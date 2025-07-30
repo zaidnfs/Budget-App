@@ -131,17 +131,41 @@
         .variable-category-group button:hover {
             background-color: #059669; /* Darker green on hover */
         }
+        .message-box {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background-color: #333;
+            color: white;
+            padding: 15px 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            z-index: 1000;
+            opacity: 0;
+            transition: opacity 0.5s ease-in-out;
+        }
+        .message-box.show {
+            opacity: 1;
+        }
+        .user-id-display {
+            font-size: 0.8rem;
+            color: #6b7280;
+            margin-top: 1rem;
+            text-align: center;
+            word-break: break-all;
+        }
     </style>
 </head>
 <body>
     <div class="container">
         <h1 class="text-4xl font-extrabold text-center text-gray-800 mb-8">Budget Tracker</h1>
+        <div id="userIdDisplay" class="user-id-display hidden"></div>
 
         <!-- Income Section -->
         <div class="mb-8 p-6 bg-blue-50 rounded-xl border border-blue-200">
             <h2 class="text-2xl font-bold text-gray-700 mb-4">Your Income</h2>
             <label for="monthlyIncome" class="block text-gray-600 text-lg font-medium mb-2">Monthly Income (₹)</label>
-            <input type="number" id="monthlyIncome" placeholder="e.g., 50000" class="mb-4">
+            <input type="number" id="monthlyIncome" placeholder="e.g., 50000" class="mb-4" onchange="saveBudget()">
         </div>
 
         <!-- Fixed Expenses Section -->
@@ -150,17 +174,17 @@
             <div id="fixedExpensesContainer" class="space-y-4">
                 <!-- Initial fixed expense input -->
                 <div class="flex items-center space-x-2">
-                    <input type="text" placeholder="Rent" class="expense-name flex-grow">
-                    <input type="number" placeholder="Amount (₹)" class="expense-amount w-32">
-                    <button type="button" class="delete-btn text-sm" onclick="removeGeneralExpenseRow(this)">X</button>
+                    <input type="text" placeholder="Rent" class="expense-name flex-grow" onchange="saveBudget()">
+                    <input type="number" placeholder="Amount (₹)" class="expense-amount w-32" onchange="saveBudget()">
+                    <button type="button" class="delete-btn text-sm" onclick="removeGeneralExpenseRow(this); saveBudget()">X</button>
                 </div>
                 <div class="flex items-center space-x-2">
-                    <input type="text" placeholder="Internet" class="expense-name flex-grow">
-                    <input type="number" placeholder="Amount (₹)" class="expense-amount w-32">
-                    <button type="button" class="delete-btn text-sm" onclick="removeGeneralExpenseRow(this)">X</button>
+                    <input type="text" placeholder="Internet" class="expense-name flex-grow" onchange="saveBudget()">
+                    <input type="number" placeholder="Amount (₹)" class="expense-amount w-32" onchange="saveBudget()">
+                    <button type="button" class="delete-btn text-sm" onclick="removeGeneralExpenseRow(this); saveBudget()">X</button>
                 </div>
             </div>
-            <button type="button" onclick="addGeneralExpenseRow('fixedExpensesContainer')" class="mt-6 px-4 py-2 text-sm">
+            <button type="button" onclick="addGeneralExpenseRow('fixedExpensesContainer'); saveBudget()" class="mt-6 px-4 py-2 text-sm">
                 Add Fixed Expense
             </button>
         </div>
@@ -172,8 +196,8 @@
                 <!-- Example Category: Groceries -->
                 <div class="variable-category-group">
                     <div class="flex items-center justify-between mb-3">
-                        <input type="text" value="Groceries" placeholder="Category Name" class="category-name font-semibold text-lg flex-grow mr-2">
-                        <button type="button" class="delete-btn text-sm rounded-full bg-red-500 hover:bg-red-600 text-white p-2 flex items-center justify-center w-8 h-8" onclick="removeVariableCategory(this)">
+                        <input type="text" value="Groceries" placeholder="Category Name" class="category-name font-semibold text-lg flex-grow mr-2" onchange="saveBudget()">
+                        <button type="button" class="delete-btn text-sm rounded-full bg-red-500 hover:bg-red-600 text-white p-2 flex items-center justify-center w-8 h-8" onclick="removeVariableCategory(this); saveBudget()">
                             <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                                 <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
                             </svg>
@@ -181,25 +205,25 @@
                     </div>
                     <div class="category-items space-y-2">
                         <div class="flex items-center space-x-2">
-                            <input type="text" placeholder="Egg" class="item-name flex-grow">
-                            <input type="number" placeholder="Amount (₹)" class="item-amount w-32">
-                            <button type="button" class="delete-btn text-sm rounded-full bg-red-500 hover:bg-red-600 text-white p-2 flex items-center justify-center w-8 h-8" onclick="removeVariableItem(this)">
+                            <input type="text" placeholder="Egg" class="item-name flex-grow" onchange="saveBudget()">
+                            <input type="number" placeholder="Amount (₹)" class="item-amount w-32" onchange="saveBudget()">
+                            <button type="button" class="delete-btn text-sm rounded-full bg-red-500 hover:bg-red-600 text-white p-2 flex items-center justify-center w-8 h-8" onclick="removeVariableItem(this); saveBudget()">
                                 <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                                     <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
                                 </svg>
                             </button>
                         </div>
                         <div class="flex items-center space-x-2">
-                            <input type="text" placeholder="Banana" class="item-name flex-grow">
-                            <input type="number" placeholder="Amount (₹)" class="item-amount w-32">
-                            <button type="button" class="delete-btn text-sm rounded-full bg-red-500 hover:bg-red-600 text-white p-2 flex items-center justify-center w-8 h-8" onclick="removeVariableItem(this)">
+                            <input type="text" placeholder="Banana" class="item-name flex-grow" onchange="saveBudget()">
+                            <input type="number" placeholder="Amount (₹)" class="item-amount w-32" onchange="saveBudget()">
+                            <button type="button" class="delete-btn text-sm rounded-full bg-red-500 hover:bg-red-600 text-white p-2 flex items-center justify-center w-8 h-8" onclick="removeVariableItem(this); saveBudget()">
                                 <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                                     <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
                                 </svg>
                             </button>
                         </div>
                     </div>
-                    <button type="button" onclick="addVariableItemRow(this.closest('.variable-category-group'))" class="mt-4 px-4 py-2 text-sm">
+                    <button type="button" onclick="addVariableItemRow(this.closest('.variable-category-group')); saveBudget()" class="mt-4 px-4 py-2 text-sm">
                         Add Groceries Item
                     </button>
                 </div>
@@ -207,8 +231,8 @@
                 <!-- Example Category: Transportation -->
                 <div class="variable-category-group">
                     <div class="flex items-center justify-between mb-3">
-                        <input type="text" value="Transportation" placeholder="Category Name" class="category-name font-semibold text-lg flex-grow mr-2">
-                        <button type="button" class="delete-btn text-sm rounded-full bg-red-500 hover:bg-red-600 text-white p-2 flex items-center justify-center w-8 h-8" onclick="removeVariableCategory(this)">
+                        <input type="text" value="Transportation" placeholder="Category Name" class="category-name font-semibold text-lg flex-grow mr-2" onchange="saveBudget()">
+                        <button type="button" class="delete-btn text-sm rounded-full bg-red-500 hover:bg-red-600 text-white p-2 flex items-center justify-center w-8 h-8" onclick="removeVariableCategory(this); saveBudget()">
                             <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                                 <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
                             </svg>
@@ -216,21 +240,21 @@
                     </div>
                     <div class="category-items space-y-2">
                         <div class="flex items-center space-x-2">
-                            <input type="text" placeholder="Bus Fare" class="item-name flex-grow">
-                            <input type="number" placeholder="Amount (₹)" class="item-amount w-32">
-                            <button type="button" class="delete-btn text-sm rounded-full bg-red-500 hover:bg-red-600 text-white p-2 flex items-center justify-center w-8 h-8" onclick="removeVariableItem(this)">
+                            <input type="text" placeholder="Bus Fare" class="item-name flex-grow" onchange="saveBudget()">
+                            <input type="number" placeholder="Amount (₹)" class="item-amount w-32" onchange="saveBudget()">
+                            <button type="button" class="delete-btn text-sm rounded-full bg-red-500 hover:bg-red-600 text-white p-2 flex items-center justify-center w-8 h-8" onclick="removeVariableItem(this); saveBudget()">
                                 <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                                     <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
                                 </svg>
                             </button>
                         </div>
                     </div>
-                    <button type="button" onclick="addVariableItemRow(this.closest('.variable-category-group'))" class="mt-4 px-4 py-2 text-sm">
+                    <button type="button" onclick="addVariableItemRow(this.closest('.variable-category-group')); saveBudget()" class="mt-4 px-4 py-2 text-sm">
                         Add Transportation Item
                     </button>
                 </div>
             </div>
-            <button type="button" onclick="addVariableCategory()" class="mt-6 px-4 py-2 text-sm">
+            <button type="button" onclick="addVariableCategory(); saveBudget()" class="mt-6 px-4 py-2 text-sm">
                 Add New Variable Category
             </button>
         </div>
@@ -241,17 +265,17 @@
             <div id="savingsContainer" class="space-y-4">
                 <!-- Initial savings input -->
                 <div class="flex items-center space-x-2">
-                    <input type="text" placeholder="Emergency Fund" class="expense-name flex-grow">
-                    <input type="number" placeholder="Amount (₹)" class="expense-amount w-32">
-                    <button type="button" class="delete-btn text-sm" onclick="removeGeneralExpenseRow(this)">X</button>
+                    <input type="text" placeholder="Emergency Fund" class="expense-name flex-grow" onchange="saveBudget()">
+                    <input type="number" placeholder="Amount (₹)" class="expense-amount w-32" onchange="saveBudget()">
+                    <button type="button" class="delete-btn text-sm" onclick="removeGeneralExpenseRow(this); saveBudget()">X</button>
                 </div>
                 <div class="flex items-center space-x-2">
-                    <input type="text" placeholder="Japan Relocation Fund" class="expense-name flex-grow">
-                    <input type="number" placeholder="Amount (₹)" class="expense-amount w-32">
-                    <button type="button" class="delete-btn text-sm" onclick="removeGeneralExpenseRow(this)">X</button>
+                    <input type="text" placeholder="Japan Relocation Fund" class="expense-name flex-grow" onchange="saveBudget()">
+                    <input type="number" placeholder="Amount (₹)" class="expense-amount w-32" onchange="saveBudget()">
+                    <button type="button" class="delete-btn text-sm" onclick="removeGeneralExpenseRow(this); saveBudget()">X</button>
                 </div>
             </div>
-            <button type="button" onclick="addGeneralExpenseRow('savingsContainer')" class="mt-6 px-4 py-2 text-sm">
+            <button type="button" onclick="addGeneralExpenseRow('savingsContainer'); saveBudget()" class="mt-6 px-4 py-2 text-sm">
                 Add Savings Goal
             </button>
         </div>
@@ -294,20 +318,230 @@
         </div>
     </div>
 
-    <script>
+    <!-- Message Box for Notifications -->
+    <div id="messageBox" class="message-box"></div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getFirestore, doc, setDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+        // Global variables for Firebase instances and user ID
+        let db;
+        let auth;
+        let currentUserId = null;
+        let isAuthReady = false;
+
+        // Display a temporary message to the user
+        function showMessage(message, duration = 3000) {
+            const messageBox = document.getElementById('messageBox');
+            messageBox.textContent = message;
+            messageBox.classList.add('show');
+            setTimeout(() => {
+                messageBox.classList.remove('show');
+            }, duration);
+        }
+
+        // Initialize Firebase and authenticate user
+        async function initializeFirebase() {
+            try {
+                const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
+                const firebaseConfig = JSON.parse(typeof __firebase_config !== 'undefined' ? __firebase_config : '{}');
+
+                const app = initializeApp(firebaseConfig);
+                db = getFirestore(app);
+                auth = getAuth(app);
+
+                // Listen for authentication state changes
+                onAuthStateChanged(auth, async (user) => {
+                    if (user) {
+                        currentUserId = user.uid;
+                        isAuthReady = true;
+                        document.getElementById('userIdDisplay').textContent = `User ID: ${currentUserId}`;
+                        document.getElementById('userIdDisplay').classList.remove('hidden');
+                        console.log("Firebase authenticated. User ID:", currentUserId);
+                        showMessage("Budget tracker loaded and ready!", 2000);
+                        // Load budget data after authentication is ready
+                        loadBudget();
+                    } else {
+                        // Sign in anonymously if no user is logged in
+                        try {
+                            if (typeof __initial_auth_token !== 'undefined') {
+                                await signInWithCustomToken(auth, __initial_auth_token);
+                            } else {
+                                await signInAnonymously(auth);
+                            }
+                        } catch (error) {
+                            console.error("Error during anonymous sign-in or custom token sign-in:", error);
+                            showMessage("Authentication failed. Data may not save.", 5000);
+                        }
+                    }
+                });
+            } catch (error) {
+                console.error("Error initializing Firebase:", error);
+                showMessage("Failed to initialize app. Check console for details.", 5000);
+            }
+        }
+
+        /**
+         * Gathers all budget data from the UI.
+         * @returns {Object} An object containing all budget data.
+         */
+        function getBudgetUIData() {
+            const monthlyIncome = parseFloat(document.getElementById('monthlyIncome').value) || 0;
+            const fixedExpenses = getExpenseDetailsFromContainer('fixedExpensesContainer');
+            const variableExpenses = getExpenseDetailsFromContainer('variableExpensesContainer');
+            const savingsGoals = getExpenseDetailsFromContainer('savingsContainer');
+
+            return {
+                monthlyIncome: monthlyIncome,
+                fixedExpenses: fixedExpenses,
+                variableExpenses: variableExpenses,
+                savingsGoals: savingsGoals
+            };
+        }
+
+        /**
+         * Populates the UI with budget data.
+         * @param {Object} budgetData - The budget data to populate.
+         */
+        function populateUIWithBudgetData(budgetData) {
+            document.getElementById('monthlyIncome').value = budgetData.monthlyIncome || '';
+
+            // Clear existing rows before populating
+            document.getElementById('fixedExpensesContainer').innerHTML = '';
+            document.getElementById('variableExpensesContainer').innerHTML = '';
+            document.getElementById('savingsContainer').innerHTML = '';
+
+            // Populate Fixed Expenses
+            if (budgetData.fixedExpenses) {
+                budgetData.fixedExpenses.forEach(exp => {
+                    addGeneralExpenseRow('fixedExpensesContainer', exp.name, exp.amount);
+                });
+            }
+
+            // Populate Variable Expenses
+            if (budgetData.variableExpenses) {
+                budgetData.variableExpenses.forEach(cat => {
+                    const newCategoryGroup = addVariableCategory(cat.category);
+                    if (cat.items) {
+                        cat.items.forEach(item => {
+                            addVariableItemRow(newCategoryGroup, item.name, item.amount);
+                        });
+                    }
+                });
+            }
+
+            // Populate Savings Goals
+            if (budgetData.savingsGoals) {
+                budgetData.savingsGoals.forEach(goal => {
+                    addGeneralExpenseRow('savingsContainer', goal.name, goal.amount);
+                });
+            }
+            // Ensure at least one empty row if no data was loaded for fixed/savings
+            if (document.getElementById('fixedExpensesContainer').children.length === 0) {
+                addGeneralExpenseRow('fixedExpensesContainer', '', '');
+            }
+            if (document.getElementById('savingsContainer').children.length === 0) {
+                addGeneralExpenseRow('savingsContainer', '', '');
+            }
+            // Ensure at least one empty category for variable expenses
+            if (document.getElementById('variableExpensesContainer').children.length === 0) {
+                addVariableCategory('');
+            }
+        }
+
+
+        /**
+         * Saves the current budget data to Firestore.
+         */
+        async function saveBudget() {
+            if (!isAuthReady || !currentUserId) {
+                console.warn("Authentication not ready or user ID not available. Cannot save budget.");
+                return;
+            }
+
+            const budgetData = getBudgetUIData();
+            const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
+            const budgetDocRef = doc(db, `artifacts/${appId}/users/${currentUserId}/budgets`, 'currentBudget');
+
+            try {
+                // Firestore doesn't directly support nested arrays like [[1,2],[3,4]]
+                // So, we'll stringify the variableExpenses array which contains nested items.
+                const dataToSave = {
+                    monthlyIncome: budgetData.monthlyIncome,
+                    fixedExpenses: budgetData.fixedExpenses,
+                    // Stringify variable expenses as they contain nested arrays
+                    variableExpenses: JSON.stringify(budgetData.variableExpenses),
+                    savingsGoals: budgetData.savingsGoals
+                };
+                await setDoc(budgetDocRef, dataToSave);
+                console.log("Budget saved successfully!");
+                // showMessage("Budget saved automatically!");
+            } catch (e) {
+                console.error("Error saving budget: ", e);
+                showMessage("Error saving budget. See console.", 3000);
+            }
+        }
+
+        /**
+         * Loads the budget data from Firestore and sets up a real-time listener.
+         */
+        function loadBudget() {
+            if (!isAuthReady || !currentUserId) {
+                console.warn("Authentication not ready or user ID not available. Cannot load budget.");
+                return;
+            }
+
+            const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
+            const budgetDocRef = doc(db, `artifacts/${appId}/users/${currentUserId}/budgets`, 'currentBudget');
+
+            onSnapshot(budgetDocRef, (docSnap) => {
+                if (docSnap.exists()) {
+                    const data = docSnap.data();
+                    console.log("Current budget data:", data);
+                    // Parse variableExpenses back from string to array of objects
+                    const loadedBudgetData = {
+                        monthlyIncome: data.monthlyIncome,
+                        fixedExpenses: data.fixedExpenses,
+                        variableExpenses: JSON.parse(data.variableExpenses || '[]'), // Parse, default to empty array
+                        savingsGoals: data.savingsGoals
+                    };
+                    populateUIWithBudgetData(loadedBudgetData);
+                    calculateBudget(); // Recalculate summary after loading
+                    showMessage("Budget loaded successfully!");
+                } else {
+                    console.log("No budget data found for this user. Starting fresh.");
+                    showMessage("No saved budget found. Start tracking!", 2000);
+                    // Initialize with empty rows if no data exists
+                    populateUIWithBudgetData({
+                        monthlyIncome: 0,
+                        fixedExpenses: [],
+                        variableExpenses: [],
+                        savingsGoals: []
+                    });
+                }
+            }, (error) => {
+                console.error("Error listening to budget data:", error);
+                showMessage("Error loading budget. See console.", 3000);
+            });
+        }
+
         /**
          * Adds a new general expense/savings input row to the specified container.
          * Used for Fixed Expenses and Savings Goals.
          * @param {string} containerId - The ID of the container (e.g., 'fixedExpensesContainer').
+         * @param {string} [name=''] - Initial name for the expense.
+         * @param {number} [amount=''] - Initial amount for the expense.
          */
-        function addGeneralExpenseRow(containerId) {
+        function addGeneralExpenseRow(containerId, name = '', amount = '') {
             const container = document.getElementById(containerId);
             const newRow = document.createElement('div');
             newRow.className = 'flex items-center space-x-2';
             newRow.innerHTML = `
-                <input type="text" placeholder="Expense Name" class="expense-name flex-grow rounded-md p-2 border border-gray-300">
-                <input type="number" placeholder="Amount (₹)" class="expense-amount w-32 rounded-md p-2 border border-gray-300">
-                <button type="button" class="delete-btn text-sm rounded-full bg-red-500 hover:bg-red-600 text-white p-2 flex items-center justify-center w-8 h-8" onclick="removeGeneralExpenseRow(this)">
+                <input type="text" placeholder="Expense Name" class="expense-name flex-grow rounded-md p-2 border border-gray-300" value="${name}" onchange="saveBudget()">
+                <input type="number" placeholder="Amount (₹)" class="expense-amount w-32 rounded-md p-2 border border-gray-300" value="${amount}" onchange="saveBudget()">
+                <button type="button" class="delete-btn text-sm rounded-full bg-red-500 hover:bg-red-600 text-white p-2 flex items-center justify-center w-8 h-8" onclick="removeGeneralExpenseRow(this); saveBudget()">
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
                     </svg>
@@ -327,51 +561,52 @@
 
         /**
          * Adds a new variable expense category group.
+         * @param {string} [categoryName=''] - Initial name for the category.
+         * @returns {HTMLElement} The newly created category group div.
          */
-        function addVariableCategory() {
+        function addVariableCategory(categoryName = '') {
             const container = document.getElementById('variableExpensesContainer');
             const newCategoryGroup = document.createElement('div');
             newCategoryGroup.className = 'variable-category-group';
             newCategoryGroup.innerHTML = `
                 <div class="flex items-center justify-between mb-3">
-                    <input type="text" placeholder="New Category Name" class="category-name font-semibold text-lg flex-grow mr-2 rounded-md p-2 border border-gray-300">
-                    <button type="button" class="delete-btn text-sm rounded-full bg-red-500 hover:bg-red-600 text-white p-2 flex items-center justify-center w-8 h-8" onclick="removeVariableCategory(this)">
+                    <input type="text" placeholder="New Category Name" class="category-name font-semibold text-lg flex-grow mr-2 rounded-md p-2 border border-gray-300" value="${categoryName}" onchange="saveBudget()">
+                    <button type="button" class="delete-btn text-sm rounded-full bg-red-500 hover:bg-red-600 text-white p-2 flex items-center justify-center w-8 h-8" onclick="removeVariableCategory(this); saveBudget()">
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
                         </svg>
                     </button>
                 </div>
                 <div class="category-items space-y-2">
-                    <!-- Initial item for the new category -->
-                    <div class="flex items-center space-x-2">
-                        <input type="text" placeholder="Item Name" class="item-name flex-grow rounded-md p-2 border border-gray-300">
-                        <input type="number" placeholder="Amount (₹)" class="item-amount w-32 rounded-md p-2 border border-gray-300">
-                        <button type="button" class="delete-btn text-sm rounded-full bg-red-500 hover:bg-red-600 text-white p-2 flex items-center justify-center w-8 h-8" onclick="removeVariableItem(this)">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                                <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
-                            </svg>
-                        </button>
-                    </div>
+                    <!-- Initial item for the new category, added by default for new categories -->
                 </div>
-                <button type="button" onclick="addVariableItemRow(this.closest('.variable-category-group'))" class="mt-4 px-4 py-2 text-sm bg-green-600 hover:bg-green-700 text-white rounded-lg">
+                <button type="button" onclick="addVariableItemRow(this.closest('.variable-category-group')); saveBudget()" class="mt-4 px-4 py-2 text-sm bg-green-600 hover:bg-green-700 text-white rounded-lg">
                     Add Item to Category
                 </button>
             `;
             container.appendChild(newCategoryGroup);
+
+            // If it's a new category being added by user, add an initial item row too
+            if (!categoryName) {
+                addVariableItemRow(newCategoryGroup);
+            }
+            return newCategoryGroup;
         }
 
         /**
          * Adds a new item input row within a specific variable expense category.
          * @param {HTMLElement} categoryGroupDiv - The div element representing the variable category group.
+         * @param {string} [itemName=''] - Initial name for the item.
+         * @param {number} [itemAmount=''] - Initial amount for the item.
          */
-        function addVariableItemRow(categoryGroupDiv) {
+        function addVariableItemRow(categoryGroupDiv, itemName = '', itemAmount = '') {
             const categoryItemsContainer = categoryGroupDiv.querySelector('.category-items');
             const newItemRow = document.createElement('div');
             newItemRow.className = 'flex items-center space-x-2';
             newItemRow.innerHTML = `
-                <input type="text" placeholder="Item Name" class="item-name flex-grow rounded-md p-2 border border-gray-300">
-                <input type="number" placeholder="Amount (₹)" class="item-amount w-32 rounded-md p-2 border border-gray-300">
-                <button type="button" class="delete-btn text-sm rounded-full bg-red-500 hover:bg-red-600 text-white p-2 flex items-center justify-center w-8 h-8" onclick="removeVariableItem(this)">
+                <input type="text" placeholder="Item Name" class="item-name flex-grow rounded-md p-2 border border-gray-300" value="${itemName}" onchange="saveBudget()">
+                <input type="number" placeholder="Amount (₹)" class="item-amount w-32 rounded-md p-2 border border-gray-300" value="${itemAmount}" onchange="saveBudget()">
+                <button type="button" class="delete-btn text-sm rounded-full bg-red-500 hover:bg-red-600 text-white p-2 flex items-center justify-center w-8 h-8" onclick="removeVariableItem(this); saveBudget()">
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
                     </svg>
@@ -458,7 +693,8 @@
                             items.push({ name: itemName, amount: itemAmount });
                         }
                     });
-                    if (items.length > 0) {
+                    // Only add category if it has a name or items
+                    if (categoryName || items.length > 0) {
                         details.push({ category: categoryName, items: items });
                     }
                 });
@@ -607,7 +843,7 @@
                     const result = await response.json();
                     if (result.candidates && result.candidates.length > 0 &&
                         result.candidates[0].content && result.candidates[0].content.parts &&
-                        result.candidates[0].content[0].parts.length > 0) {
+                        result.candidates[0].content.parts.length > 0) {
                         const text = result.candidates[0].content.parts[0].text;
                         aiInsightsContent.innerHTML = text.replace(/\n/g, '<br>'); // Display newlines as breaks
                     } else {
@@ -624,6 +860,9 @@
                 }
             }
         }
+
+        // Initialize Firebase when the window loads
+        window.onload = initializeFirebase;
     </script>
 </body>
 </html>
